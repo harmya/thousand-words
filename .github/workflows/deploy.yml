@@ -35,8 +35,8 @@ jobs:
       - name: Add .nojekyll file
         run: |
           # Check if the out directory exists
-          if [ -d "./frontend/next" ]; then
-            touch ./frontend/next/.nojekyll
+          if [ -d "./frontend/.next" ]; then
+            touch ./frontend/.next/.nojekyll
           else
             echo "Build directory not found. Check the build output path."
             exit 1
@@ -45,6 +45,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: ./frontend/out
+          folder: ./frontend/.next
           branch: gh-pages
           clean: true
