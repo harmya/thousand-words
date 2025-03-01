@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
   basePath:
     process.env.GITHUB_ACTIONS && process.env.NODE_ENV === "production"
       ? "/thousand-words"
-      : "",
+      : "/thousand-words",
   assetPrefix:
     process.env.GITHUB_ACTIONS && process.env.NODE_ENV === "production"
       ? "/thousand-words/"
-      : "./",
+      : "/thousand-words/",
   images: {
     unoptimized: true,
   },
