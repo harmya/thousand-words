@@ -10,7 +10,7 @@ actix-web = "4"
 actix-multipart = "0.7.2"
 futures = "0.3.31"
 serde = { version = "1.0.215", features = ["derive"] }
-
+chrono = "0.4.40"
 [[bin]]
 name = "thousand-words"
 path = "backend/main.rs"

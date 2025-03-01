@@ -1,9 +1,12 @@
 use actix_multipart::Multipart;
 use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use image::{DynamicImage, GrayImage};
+use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
-use serde::Serialize;
+use rand::SeedableRng;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -26,13 +29,16 @@ fn create_histogram(gray_img: &GrayImage) -> [u32; 256] {
     histogram
 }
 
-fn to_letter_matrix_uniform(gray_img: &GrayImage) -> Vec<Vec<char>> {
+// Modified to accept a seed parameter
+fn to_letter_matrix_uniform(gray_img: &GrayImage, seed: u64) -> Vec<Vec<char>> {
     let width = gray_img.width() as usize;
     let height = gray_img.height() as usize;
     let mut letter_matrix = vec![vec!['_'; width]; height];
     let mut letter_frequencies = get_english_letter_frequencies();
-    let mut rng = rand::thread_rng();
-    letter_frequencies.shuffle(&mut rng);
+
+    // Use the provided seed instead of computing it
+    let mut seeded_rng = StdRng::seed_from_u64(seed);
+    letter_frequencies.shuffle(&mut seeded_rng);
 
     let bin_size = 256.0 / 26.0;
     let mut bins: Vec<(u8, u8)> = Vec::new();
@@ -147,17 +153,18 @@ fn find_substring_words_fixed_max(
     found_words.into_iter().collect()
 }
 
-// Now returning both the words and the letter string
+// Modified to accept a seed parameter
 fn extract_words_and_letters_from_image(
     img: &DynamicImage,
     dictionary: &HashSet<String>,
     max_word_length: usize,
     max_consecutive_letters: usize,
+    seed: u64,
 ) -> Result<(Vec<String>, String), Box<dyn std::error::Error>> {
     let gray_img = img.to_luma8();
 
-    // Convert image to letter matrix and flatten it
-    let letter_matrix = to_letter_matrix_uniform(&gray_img);
+    // Pass the seed to the letter matrix function
+    let letter_matrix = to_letter_matrix_uniform(&gray_img, seed);
     let letter_string = flatten_letter_matrix_with_limit(&letter_matrix, max_consecutive_letters);
 
     // Find words
@@ -180,20 +187,41 @@ struct WordResponse {
     letter_string: String,
 }
 
+// Request struct to deserialize the input data
+#[derive(Deserialize)]
+struct ImageProcessRequest {
+    seed: Option<u64>,
+}
+
 async fn process_image(
     mut payload: Multipart,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    //
     let mut image_bytes = Vec::new();
+    let mut seed = None;
 
     while let Ok(Some(mut field)) = payload.try_next().await {
         if let Some(content_disposition) = field.content_disposition() {
-            if content_disposition.get_name().unwrap_or("") == "image" {
+            let field_name = content_disposition.get_name().unwrap_or("");
+
+            if field_name == "image" {
                 // Read the file content
                 while let Some(chunk) = field.next().await {
                     let data = chunk?;
                     image_bytes.extend_from_slice(&data);
+                }
+            } else if field_name == "seed" {
+                // Read the seed value
+                let mut value = Vec::new();
+                while let Some(chunk) = field.next().await {
+                    let data = chunk?;
+                    value.extend_from_slice(&data);
+                }
+
+                if let Ok(seed_str) = std::str::from_utf8(&value) {
+                    if let Ok(seed_value) = seed_str.trim().parse::<u64>() {
+                        seed = Some(seed_value);
+                    }
                 }
             }
         }
@@ -202,6 +230,16 @@ async fn process_image(
     if image_bytes.is_empty() {
         return Ok(HttpResponse::BadRequest().body("No image provided"));
     }
+
+    // Use today's date as default seed if not provided
+    let seed_value = seed.unwrap_or_else(|| {
+        let today = Utc::now();
+        today
+            .format("%Y%m%d")
+            .to_string()
+            .parse::<u64>()
+            .unwrap_or(0)
+    });
 
     // Load the image from memory
     let img = match image::load_from_memory(&image_bytes) {
@@ -212,7 +250,7 @@ async fn process_image(
     // Process the image
     let dictionary = data.dictionary.lock().unwrap();
 
-    match extract_words_and_letters_from_image(&img, &dictionary, 10, 2) {
+    match extract_words_and_letters_from_image(&img, &dictionary, 10, 2, seed_value) {
         Ok((words, letter_string)) => {
             let response = WordResponse {
                 words,

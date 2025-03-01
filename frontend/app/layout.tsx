@@ -9,9 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Image to Words Converter",
-  description:
-    "Transform your images into a dream-like sequence of words through our innovative bit-to-letter algorithm",
+  title: "Thousand Words",
+  description: "A picture is worth a thousand words.",
 };
 
 export default function RootLayout({

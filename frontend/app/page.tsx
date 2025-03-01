@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { processImage, wordsToTopWords } from "../utils/api";
 import { TopWord } from "../types";
 import ErrorMessage from "./components/ErrorMessage";
+import HowItWorks from "./components/HowItWorks";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -13,6 +14,20 @@ export default function Home() {
   const [topWords, setTopWords] = useState<TopWord[]>([]);
   const [showOutput, setShowOutput] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [fadeIn, setFadeIn] = useState<boolean>(false);
+
+  // Effect to handle fade-in animation after showOutput is set to true
+  useEffect(() => {
+    if (showOutput) {
+      // Small delay to ensure DOM has updated before starting the animation
+      const timer = setTimeout(() => {
+        setFadeIn(true);
+      }, 10);
+      return () => clearTimeout(timer);
+    } else {
+      setFadeIn(false);
+    }
+  }, [showOutput]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -34,12 +49,8 @@ export default function Home() {
     setError(null);
 
     try {
-      // Process the image using our utility function
       const data = await processImage(file);
-
-      // Convert the words array to TopWord[] with scores
       const wordsWithScores = wordsToTopWords(data.words);
-
       setTopWords(wordsWithScores);
       setShowOutput(true);
     } catch (err) {
@@ -50,34 +61,40 @@ export default function Home() {
   };
 
   const resetForm = (): void => {
-    setFile(null);
-    setPreview(null);
-    setTopWords([]);
-    setShowOutput(false);
+    // First fade out the results
+    setFadeIn(false);
+
+    // Then reset form after animation completes
+    setTimeout(() => {
+      setFile(null);
+      setPreview(null);
+      setTopWords([]);
+      setShowOutput(false);
+    }, 300); // Match this duration with the CSS transition time
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white">
+    <main className="min-h-screen bg-black">
       {error && (
         <ErrorMessage message={error} onDismiss={() => setError(null)} />
       )}
-      <div className="container mx-auto px-4 py-16">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-thin tracking-wide mb-4">
-            Image to Words
+      <div className="container mx-auto px-4 py-12">
+        <header className="text-center mb-12">
+          <h1 className="text-4xl font-light tracking-wider mb-3">
+            <span className="text-blue-300">A picture</span> is worth a thousand
+            words
           </h1>
-          <p className="text-lg text-purple-200 max-w-2xl mx-auto">
-            Transform your images into a dream-like sequence of words through
-            our innovative bit-to-letter algorithm
+          <p className="text-lg text-bold text-blue-300/80 max-w-xl mx-auto">
+            Are there hidden messages in pictures?
           </p>
         </header>
 
         {!showOutput ? (
-          <div className="max-w-3xl mx-auto">
-            <div className="backdrop-blur-lg bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20">
-              <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="max-w-2xl mx-auto opacity-100 transition-opacity duration-300 ease-in-out">
+            <div className="bg-blue rounded-lg p-6 shadow-xl ">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div
-                  className="border-2 border-dashed border-purple-300/50 rounded-2xl h-64 flex items-center justify-center cursor-pointer overflow-hidden"
+                  className="border border-blue-900/40 rounded-lg h-96 flex items-center justify-center cursor-pointer overflow-hidden bg-black"
                   onClick={() =>
                     document.getElementById("file-upload")?.click()
                   }
@@ -95,7 +112,7 @@ export default function Home() {
                     <div className="text-center p-6">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-16 w-16 mx-auto text-purple-300"
+                        className="h-12 w-12 mx-auto text-blue-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -107,8 +124,8 @@ export default function Home() {
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       </svg>
-                      <p className="mt-4">
-                        Drag an image here or click to browse
+                      <p className="mt-3 text-sm text-blue-300">
+                        Select an image or drag and drop
                       </p>
                     </div>
                   )}
@@ -125,18 +142,18 @@ export default function Home() {
                     type="submit"
                     disabled={!file || loading}
                     className={`
-                      px-8 py-3 rounded-full text-lg font-medium transition-all duration-300
+                      px-6 py-2 rounded-md text-sm font-medium transition-all duration-300
                       ${
                         file && !loading
-                          ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg"
-                          : "bg-gray-500 cursor-not-allowed"
+                          ? "bg-blue-900/70 hover:bg-blue-800/70 shadow-md cursor-pointer"
+                          : "bg-blue-950/50 text-blue-300/70 cursor-not-allowed"
                       }
                     `}
                   >
                     {loading ? (
                       <div className="flex items-center">
                         <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-300"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -158,7 +175,9 @@ export default function Home() {
                         Processing...
                       </div>
                     ) : (
-                      "Transform Image"
+                      <span className="text-blue-300 text-bold text-lg">
+                        What does it say?
+                      </span>
                     )}
                   </button>
                 </div>
@@ -166,77 +185,87 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="max-w-5xl mx-auto">
-            <div className="backdrop-blur-lg bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1">
-                  <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden">
-                    {preview && (
-                      <Image
-                        src={preview}
-                        alt="Original image"
-                        fill
-                        className="object-contain"
-                      />
-                    )}
-                  </div>
-                  <div className="mt-8">
-                    <h3 className="text-xl font-medium mb-4">Top Words</h3>
-                    <ul className="space-y-3">
-                      {topWords.map((item, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center justify-between"
-                        >
-                          <span className="text-lg">{item.word}</span>
-                          <div className="w-32 bg-white/20 rounded-full h-2">
-                            <div
-                              className="bg-gradient-to-r from-purple-400 to-pink-500 h-2 rounded-full"
-                              style={{ width: `${item.score * 100}%` }}
-                            ></div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+          <div
+            className={`max-w-5xl mx-auto max-h-5xl transition-all duration-300 ease-in-out ${
+              fadeIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+          >
+            <div className="rounded-lg p-6 shadow-xl">
+              <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
+                <div className="md:col-span-3">
+                  <div className="rounded-lg overflow-hidden bg-black shadow-inner">
+                    <div className="relative w-full h-96">
+                      {preview && (
+                        <Image
+                          src={preview}
+                          alt="Original image"
+                          fill
+                          className="object-contain"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="lg:col-span-2">
-                  <h3 className="text-xl font-medium mb-4">
-                    Letter String Output
+                <div className="md:col-span-4">
+                  <h3 className="text-2xl font-medium mb-3 text-blue-300 pl-4">
+                    Extracted Words
                   </h3>
-                  <div className="mt-8">
-                    <h3 className="text-xl font-medium mb-4">Visualization</h3>
-                    <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 h-40 overflow-hidden shadow-inner relative">
-                      <div className="absolute inset-0 flex flex-wrap overflow-hidden">
-                        {topWords.map((word, idx) => (
-                          <div
-                            key={idx}
-                            className="px-3 py-1 m-1 rounded-full bg-white/10 text-purple-200 text-sm"
+                  <div className="bg-black/70 backdrop-blur-sm rounded-lg p-4 h-96 overflow-auto shadow-inner border border-blue-900/20">
+                    <div className="grid grid-cols-3 gap-4 p-2">
+                      {topWords.map((word, idx) => (
+                        <div
+                          key={idx}
+                          className="relative flex items-center justify-center"
+                          style={{
+                            opacity: fadeIn ? 1 : 0,
+                            transform: fadeIn
+                              ? "translateY(0)"
+                              : "translateY(10px)",
+                            transitionDelay: `${idx * 30}ms`,
+                            transitionProperty: "opacity, transform",
+                            transitionDuration: "400ms",
+                            transitionTimingFunction:
+                              "cubic-bezier(0.4, 0, 0.2, 1)",
+                          }}
+                        >
+                          <span
+                            className="w-full text-center px-4 py-2 rounded-lg bg-blue-900/20 text-blue-300 shadow-lg border border-blue-900/40 transition-all hover:translate-y-[-2px] hover:shadow-blue-900/20"
                             style={{
-                              opacity: word.score,
-                              transform: `scale(${word.score})`,
+                              fontSize: `${Math.max(
+                                14,
+                                Math.min(28, 14 + word.score * 18)
+                              )}px`,
+                              fontWeight: word.score > 0.7 ? 500 : 400,
+                              letterSpacing:
+                                word.score > 0.6 ? "0.025em" : "normal",
                             }}
                           >
                             {word.word}
-                          </div>
-                        ))}
-                      </div>
+                          </span>
+                          {word.score > 0.7 && (
+                            <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2/3 h-[2px] bg-blue-500/30 rounded-full blur-sm opacity-70"></span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center mt-6">
                 <button
                   onClick={resetForm}
-                  className="px-6 py-2 border border-white/30 rounded-full hover:bg-white/10 transition-all duration-300"
+                  className="px-4 py-2 rounded-md text-sm hover:bg-blue-950 transition-all duration-300 font-bold cursor-pointer"
                 >
-                  Process Another Image
+                  <span className="text-lg">Process Another Image</span>
                 </button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Include the HowItWorks component */}
+      <HowItWorks />
     </main>
   );
 }
