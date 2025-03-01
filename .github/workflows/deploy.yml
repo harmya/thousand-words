@@ -25,10 +25,22 @@ jobs:
 
       - name: Build Next.js app
         working-directory: ./frontend
-        run: npm run build
+        run: |
+          npm run build
+          echo "Build completed. Listing directories:"
+          ls -la
+          echo "Content of parent directory:"
+          ls -la ..
 
       - name: Add .nojekyll file
-        run: touch ./frontend/out/.nojekyll
+        run: |
+          # Check if the out directory exists
+          if [ -d "./frontend/out" ]; then
+            touch ./frontend/out/.nojekyll
+          else
+            echo "Build directory not found. Check the build output path."
+            exit 1
+          fi
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
