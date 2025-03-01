@@ -1,0 +1,16 @@
+[package]
+name = "thousand-words"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+image = "0.25.5"
+rand = "0.8.5"
+actix-web = "4"
+actix-multipart = "0.7.2"
+futures = "0.3.31"
+serde = { version = "1.0.215", features = ["derive"] }
+chrono = "0.4.40"
+[[bin]]
+name = "thousand-words"
+path = "backend/main.rs"
