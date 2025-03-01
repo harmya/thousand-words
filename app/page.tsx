@@ -6,6 +6,7 @@ import { processImage, wordsToTopWords } from "../utils/api";
 import { TopWord } from "../types";
 import ErrorMessage from "./components/ErrorMessage";
 import HowItWorks from "./components/HowItWorks";
+import React from "react";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
