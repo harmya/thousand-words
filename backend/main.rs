@@ -1,5 +1,6 @@
+use actix_cors::Cors;
 use actix_multipart::Multipart;
-use actix_web::{web, App, Error, HttpResponse, HttpServer};
+use actix_web::{http, web, App, Error, HttpResponse, HttpServer};
 use chrono::Utc;
 use futures::{StreamExt, TryStreamExt};
 use image::{DynamicImage, GrayImage};
@@ -291,6 +292,17 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(app_state.clone())
+            .wrap(
+                Cors::default()
+                    .allowed_origin("https://harmya.me")
+                    .allowed_origin("https://harmya.me/thousand-words")
+                    .allowed_origin("http://harmya.me/thousand-words")
+                    .allowed_origin("https://harmya.github.io")
+                    .allowed_origin("http://harmya.github.io")
+                    .allowed_methods(vec!["GET", "POST"])
+                    .allowed_headers(vec![http::header::CONTENT_TYPE])
+                    .max_age(3600),
+            )
             .route("/process", web::post().to(process_image))
     })
     .bind(address)?
