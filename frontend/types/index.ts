@@ -1,6 +1,5 @@
 export interface WordResponse {
   words: string[];
-  letter_string: string;
 }
 
 export interface TopWord {

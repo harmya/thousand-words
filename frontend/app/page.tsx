@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  processImage,
-  formatLetterString,
-  wordsToTopWords,
-} from "../utils/api";
+import { processImage, wordsToTopWords } from "../utils/api";
 import { TopWord } from "../types";
 import ErrorMessage from "./components/ErrorMessage";
 
@@ -14,7 +10,6 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [letterString, setLetterString] = useState<string>("");
   const [topWords, setTopWords] = useState<TopWord[]>([]);
   const [showOutput, setShowOutput] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +40,6 @@ export default function Home() {
       // Convert the words array to TopWord[] with scores
       const wordsWithScores = wordsToTopWords(data.words);
 
-      setLetterString(data.letter_string);
       setTopWords(wordsWithScores);
       setShowOutput(true);
     } catch (err) {
@@ -58,7 +52,6 @@ export default function Home() {
   const resetForm = (): void => {
     setFile(null);
     setPreview(null);
-    setLetterString("");
     setTopWords([]);
     setShowOutput(false);
   };
@@ -211,20 +204,6 @@ export default function Home() {
                   <h3 className="text-xl font-medium mb-4">
                     Letter String Output
                   </h3>
-                  <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 max-h-96 overflow-auto font-mono text-xs text-green-300 shadow-inner">
-                    {formatLetterString(letterString).map((line, lineIndex) => (
-                      <div key={lineIndex} className="mb-1">
-                        {line.split("").map((letter, charIndex) => (
-                          <span
-                            key={`${lineIndex}-${charIndex}`}
-                            className="font-mono"
-                          >
-                            {letter}
-                          </span>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
                   <div className="mt-8">
                     <h3 className="text-xl font-medium mb-4">Visualization</h3>
                     <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 h-40 overflow-hidden shadow-inner relative">
