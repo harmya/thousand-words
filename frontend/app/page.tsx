@@ -2,78 +2,72 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import {
+  processImage,
+  formatLetterString,
+  wordsToTopWords,
+} from "../utils/api";
+import { TopWord } from "../types";
+import ErrorMessage from "./components/ErrorMessage";
 
 export default function Home() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [bitString, setBitString] = useState("");
-  const [topWords, setTopWords] = useState([]);
-  const [showOutput, setShowOutput] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [letterString, setLetterString] = useState<string>("");
+  const [topWords, setTopWords] = useState<TopWord[]>([]);
+  const [showOutput, setShowOutput] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onload = () => {
-        setPreview(reader.result);
+        setPreview(reader.result as string);
       };
       reader.readAsDataURL(selectedFile);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) return;
 
     setLoading(true);
+    setError(null);
 
-    // Convert image to bit string (simulated)
-    setTimeout(() => {
-      // This is where you'd normally call your API to process the image
-      // For demo purposes, we're generating random output
-      const simulatedBitString = generateRandomBitString(1000);
-      const simulatedWords = generateRandomWords();
+    try {
+      // Process the image using our utility function
+      const data = await processImage(file);
 
-      setBitString(simulatedBitString);
-      setTopWords(simulatedWords);
-      setLoading(false);
+      // Convert the words array to TopWord[] with scores
+      const wordsWithScores = wordsToTopWords(data.words);
+
+      setLetterString(data.letter_string);
+      setTopWords(wordsWithScores);
       setShowOutput(true);
-    }, 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to process image");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Helper function to generate a random bit string for demo
-  const generateRandomBitString = (length) => {
-    return Array.from({ length }, () => Math.round(Math.random())).join("");
-  };
-
-  // Helper function to generate random words for demo
-  const generateRandomWords = () => {
-    const words = [
-      { word: "ethereal", score: 0.95 },
-      { word: "luminous", score: 0.92 },
-      { word: "serenity", score: 0.89 },
-      { word: "whisper", score: 0.85 },
-      { word: "cascade", score: 0.82 },
-      { word: "velvet", score: 0.79 },
-      { word: "gossamer", score: 0.77 },
-      { word: "shimmer", score: 0.75 },
-      { word: "tranquil", score: 0.72 },
-      { word: "radiance", score: 0.7 },
-    ];
-    return words;
-  };
-
-  const resetForm = () => {
+  const resetForm = (): void => {
     setFile(null);
     setPreview(null);
-    setBitString("");
+    setLetterString("");
     setTopWords([]);
     setShowOutput(false);
   };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white">
+      {error && (
+        <ErrorMessage message={error} onDismiss={() => setError(null)} />
+      )}
       <div className="container mx-auto px-4 py-16">
         <header className="text-center mb-16">
           <h1 className="text-5xl font-thin tracking-wide mb-4">
@@ -91,7 +85,9 @@ export default function Home() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div
                   className="border-2 border-dashed border-purple-300/50 rounded-2xl h-64 flex items-center justify-center cursor-pointer overflow-hidden"
-                  onClick={() => document.getElementById("file-upload").click()}
+                  onClick={() =>
+                    document.getElementById("file-upload")?.click()
+                  }
                 >
                   {preview ? (
                     <div className="relative w-full h-full">
@@ -182,12 +178,14 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
                   <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden">
-                    <Image
-                      src={preview}
-                      alt="Original image"
-                      fill
-                      className="object-contain"
-                    />
+                    {preview && (
+                      <Image
+                        src={preview}
+                        alt="Original image"
+                        fill
+                        className="object-contain"
+                      />
+                    )}
                   </div>
                   <div className="mt-8">
                     <h3 className="text-xl font-medium mb-4">Top Words</h3>
@@ -211,43 +209,39 @@ export default function Home() {
                 </div>
                 <div className="lg:col-span-2">
                   <h3 className="text-xl font-medium mb-4">
-                    Bit String Output
+                    Letter String Output
                   </h3>
                   <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 max-h-96 overflow-auto font-mono text-xs text-green-300 shadow-inner">
-                    {bitString.split("").map((bit, index) => (
-                      <span
-                        key={index}
-                        className={`${
-                          bit === "1" ? "text-green-300" : "text-green-500/70"
-                        } ${
-                          index % 50 === 0 && index !== 0 ? "block mt-1" : ""
-                        }`}
-                      >
-                        {bit}
-                      </span>
+                    {formatLetterString(letterString).map((line, lineIndex) => (
+                      <div key={lineIndex} className="mb-1">
+                        {line.split("").map((letter, charIndex) => (
+                          <span
+                            key={`${lineIndex}-${charIndex}`}
+                            className="font-mono"
+                          >
+                            {letter}
+                          </span>
+                        ))}
+                      </div>
                     ))}
                   </div>
                   <div className="mt-8">
-                    <h3 className="text-xl font-medium mb-4">Letter Mapping</h3>
-                    <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 max-h-40 overflow-auto font-mono text-xs text-purple-300 shadow-inner">
-                      {bitString
-                        .split("")
-                        .slice(0, 200)
-                        .map((bit, index) => (
-                          <span
-                            key={index}
-                            className={`${
-                              index % 50 === 0 && index !== 0
-                                ? "block mt-1"
-                                : ""
-                            }`}
+                    <h3 className="text-xl font-medium mb-4">Visualization</h3>
+                    <div className="backdrop-blur-md bg-black/30 rounded-xl p-4 h-40 overflow-hidden shadow-inner relative">
+                      <div className="absolute inset-0 flex flex-wrap overflow-hidden">
+                        {topWords.map((word, idx) => (
+                          <div
+                            key={idx}
+                            className="px-3 py-1 m-1 rounded-full bg-white/10 text-purple-200 text-sm"
+                            style={{
+                              opacity: word.score,
+                              transform: `scale(${word.score})`,
+                            }}
                           >
-                            {String.fromCharCode(
-                              97 + parseInt(bit) * (index % 26)
-                            )}
-                          </span>
+                            {word.word}
+                          </div>
                         ))}
-                      <span className="text-gray-400"> ... and more</span>
+                      </div>
                     </div>
                   </div>
                 </div>
