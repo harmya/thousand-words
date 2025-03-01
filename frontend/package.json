@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://harmya.github.io/thousand-words",
+  "homepage": "https://harmya.me/thousand-words",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
