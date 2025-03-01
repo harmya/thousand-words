@@ -192,7 +192,7 @@ export default function HowItWorks() {
 
         <div className="text-center mt-12">
           <p className="text-blue-100/80 max-w-2xl mx-auto">
-            Thanks to{" "}
+            Thought about this because of{" "}
             <a
               href="https://sarthakmangla.com"
               target="_blank"
@@ -200,7 +200,6 @@ export default function HowItWorks() {
             >
               Sarthak Mangla
             </a>{" "}
-            for the idea
           </p>
         </div>
       </div>
