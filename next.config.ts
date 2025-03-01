@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, // Disable default image optimization
   },
-  assetPrefix: isProd ? "/thousand-words/" : "",
-  basePath: isProd ? "/thousand-words" : "",
+  assetPrefix: isProd ? "/" : "",
+  basePath: isProd ? "/" : "",
   output: "export",
 };
 
