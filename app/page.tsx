@@ -211,8 +211,10 @@ export default function Home() {
                   <h3 className="text-2xl font-medium mb-3 text-blue-300 pl-4">
                     Extracted Words
                   </h3>
+                  {/* Make the grid more responsive */}
                   <div className="bg-black/70 backdrop-blur-sm rounded-lg p-4 h-96 overflow-auto shadow-inner border border-blue-900/20">
-                    <div className="grid grid-cols-3 gap-4 p-2">
+                    {/* Update the grid to be more responsive */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-2">
                       {topWords.map((word, idx) => (
                         <div
                           key={idx}
@@ -230,11 +232,11 @@ export default function Home() {
                           }}
                         >
                           <span
-                            className="w-full text-center px-4 py-2 rounded-lg bg-blue-900/20 text-blue-300 shadow-lg border border-blue-900/40 transition-all hover:translate-y-[-2px] hover:shadow-blue-900/20"
+                            className="w-full text-center px-4 py-3 rounded-lg bg-blue-900/20 text-blue-300 shadow-lg border border-blue-900/40 transition-all hover:translate-y-[-2px] hover:shadow-blue-900/20"
                             style={{
                               fontSize: `${Math.max(
                                 14,
-                                Math.min(28, 14 + word.score * 18)
+                                Math.min(24, 14 + word.score * 16)
                               )}px`,
                               fontWeight: word.score > 0.7 ? 500 : 400,
                               letterSpacing:
