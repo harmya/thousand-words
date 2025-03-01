@@ -7,7 +7,7 @@ export async function processImage(file: File): Promise<WordResponse> {
     formData.append("image", file);
 
     const response = await fetch(
-      "https://thousand-words-1u5f.onrender.com/process",
+      "https://thousand-words-1u5f.onrender.com:8080/process",
       {
         method: "POST",
         body: formData,
