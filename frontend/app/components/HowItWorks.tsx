@@ -29,9 +29,8 @@ export default function HowItWorks() {
                 />
               </div>
             </div>
-            <p className="text-blue-100/80 text-sm">
-              We start with your uploaded image - this could be any photo or
-              graphic.
+            <p className="text-blue-100/80 text-med text-center">
+              Uploaded image
             </p>
           </div>
 
@@ -51,9 +50,9 @@ export default function HowItWorks() {
                 />
               </div>
             </div>
-            <p className="text-blue-100/80 text-sm">
-              The image is converted to grayscale, where each pixel has a value
-              from 0 (black) to 1 (white).
+            <p className="text-blue-100/80 text-med">
+              Convert to grayscale, where each pixel has a value from 0 (black)
+              to 1 (white)
             </p>
           </div>
 
@@ -63,193 +62,146 @@ export default function HowItWorks() {
               Step 3: Pixel to Letter Mapping
             </h3>
             <div className="aspect-square bg-black rounded-lg overflow-hidden relative mb-4 p-3 border border-blue-900/40">
-              <div className="flex flex-col h-96  justify-center gap-2">
-                <div className="text-blue-100/80 text-xs text-center mb-2">
-                  Dividing grayscale range (0-1) into 26 equal bins:
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-blue-300/80 text-xs">0.0</span>
-                  <div className="h-2 flex-grow mx-1 bg-gradient-to-r from-black to-blue-100"></div>
-                  <span className="text-blue-300/80 text-xs">1.0</span>
-                </div>
-                <div className="grid grid-cols-7 gap-1 mt-2">
-                  {Array.from({ length: 26 }).map((_, i) => {
-                    const letter = String.fromCharCode(97 + i); // a-z
-                    const rangeStart = (i / 26).toFixed(2);
-                    return (
-                      <div
-                        key={i}
-                        className="flex flex-col items-center text-xs bg-blue-900/20 rounded p-1"
-                      >
-                        <span className="text-blue-300 font-bold">
-                          {letter}
-                        </span>
-                        <span className="text-blue-100/60">{rangeStart}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="text-blue-100/80 text-xs text-center mt-4">
-                  Example mappings:
-                </div>
-                <div className="flex justify-between">
-                  <div className="text-center">
-                    <div className="w-8 h-8 bg-black rounded-full border border-blue-900/40 flex items-center justify-center">
-                      <span className="text-xs text-blue-100/90">0.05</span>
+              <div className="text-blue-100/80 text-xs text-center mb-2">
+                Dividing grayscale range (0-1) into 26 equal bins:
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-300/80 text-xs">0.0</span>
+                <div className="h-2 flex-grow mx-1 bg-gradient-to-r from-black to-blue-100"></div>
+                <span className="text-blue-300/80 text-xs">1.0</span>
+              </div>
+              <div className="grid grid-cols-7 gap-1 mt-2">
+                {Array.from({ length: 26 }).map((_, i) => {
+                  const letter = String.fromCharCode(97 + i);
+                  const rangeStart = (i / 26).toFixed(2);
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center text-xs bg-blue-900/20 rounded p-1"
+                    >
+                      <span className="text-blue-300 font-bold">{letter}</span>
+                      <span className="text-blue-100/60">{rangeStart}</span>
                     </div>
-                    <span className="text-blue-300 text-xs mt-1 block">
-                      → a
-                    </span>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-8 h-8 bg-black rounded-full border border-blue-900/40 flex items-center justify-center">
-                      <span className="text-xs text-blue-100/90">0.42</span>
-                    </div>
-                    <span className="text-blue-300 text-xs mt-1 block">
-                      → k
-                    </span>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-8 h-8 bg-black rounded-full border border-blue-900/40 flex items-center justify-center">
-                      <span className="text-xs text-blue-100/90">0.89</span>
-                    </div>
-                    <span className="text-blue-300 text-xs mt-1 block">
-                      → w
-                    </span>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
-            <p className="text-blue-100/80 text-sm">
-              Pixel values are mapped to letters (a-z) by dividing the 0-1 range
-              into 26 equal bins.
+            <p className="text-blue-100/80 text-med">
+              Divide the grayscale range (0-1) into 26 equal bins and randomly
+              assign a letter to each bin
             </p>
           </div>
 
           {/* Step 4: Generate String */}
-          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px]">
+          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px] md:col-span-1">
             <h3 className="text-xl text-blue-300 mb-4 font-medium">
               Step 4: Generate String
             </h3>
             <div className="aspect-square bg-black rounded-lg overflow-hidden relative mb-4 p-3 border border-blue-900/40">
-              <div className="h-full overflow-hidden text-blue-300/70 text-xs flex flex-wrap">
-                {/* Use fixed string to avoid hydration mismatch with random values */}
-                {"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
-                  .split("")
-                  .map((letter, i) => (
-                    <span key={i}>{letter}</span>
-                  ))}
+              <div className="h-full overflow-auto text-blue-300/90 text-xs leading-relaxed whitespace-pre">
+                {/* Multiline block of mapped text that fits better */}
+                <p>abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst</p>
+                <p>zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihg</p>
+                <p>qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklz</p>
+                <p>mnbvcxzlkjhgfdsapoiuytrewqmnbvcxzlkjhgfdsapoiu</p>
+                <p>abcmnopqrstuvwxydefghijklzabcmnopqrstuvwxydefg</p>
+                <p>zyxmlkjihgfedcbawvutsrqponzyxmlkjihgfedcbawvut</p>
+                <p>qazwsxedcrfvtgbyhnujmikolpqazwsxedcrfvtgbyhnuj</p>
+                <p>plokimjunhybgtvfrcdexswzaqplokimjunhybgtvfrcdex</p>
+                <p>aeiouybcdfghjklmnpqrstvwxzaeiouybcdfghjklmnpqrs</p>
+                <p>zxwvtsrqpnmlkjhgfdcbyuoieazxwvtsrqpnmlkjhgfdcby</p>
+                <p>abcdefzyxwvumlkjitsrqponghabcdefzyxwvumlkjitsrq</p>
+                <p>zyxwvuabcdefmlkjitsrqponghazyxwvuabcdefmlkjitsr</p>
+                <p>qwertymnbvcxasdfghuioplkjzqwertymnbvcxasdfghuio</p>
+                <p>mnbvcxqwertyasdfghuioplkjzmnbvcxqwertyasdfghuio</p>
               </div>
             </div>
-            <p className="text-blue-100/80 text-sm">
+            <p className="text-blue-100/80 text-med">
               The mapping generates a long string of letters from all pixels in
-              the image.
+              the image
             </p>
           </div>
 
           {/* Step 5: Word Extraction */}
-          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px]">
+          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px] md:col-span-1">
             <h3 className="text-xl text-blue-300 mb-4 font-medium">
               Step 5: Word Extraction
             </h3>
             <div className="aspect-square bg-black rounded-lg overflow-hidden relative mb-4 p-3 border border-blue-900/40">
               <div className="flex flex-col h-full justify-center space-y-2">
-                <div className="text-blue-100/80 text-xs mb-2">
-                  Words ordered by length and occurrence frequency:
-                </div>
                 <div className="flex items-center">
                   <div className="w-16 h-8 bg-blue-900/20 rounded flex items-center justify-center text-blue-300 border border-blue-900/40">
                     butterfly
                   </div>
                   <div className="h-1 bg-blue-500/30 flex-grow mx-2"></div>
-                  <div className="text-blue-100 text-sm">0.92</div>
+                  <div className="text-blue-100 text-sm">9</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-16 h-8 bg-blue-900/20 rounded flex items-center justify-center text-blue-300 border border-blue-900/40">
                     mountain
                   </div>
                   <div className="h-1 bg-blue-500/30 flex-grow mx-2"></div>
-                  <div className="text-blue-100 text-sm">0.84</div>
+                  <div className="text-blue-100 text-sm">8</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-16 h-8 bg-blue-900/20 rounded flex items-center justify-center text-blue-300 border border-blue-900/40">
                     forest
                   </div>
                   <div className="h-1 bg-blue-500/30 flex-grow mx-2"></div>
-                  <div className="text-blue-100 text-sm">0.76</div>
+                  <div className="text-blue-100 text-sm">6</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-16 h-8 bg-blue-900/20 rounded flex items-center justify-center text-blue-300 border border-blue-900/40">
-                    tree
+                    blue
                   </div>
                   <div className="h-1 bg-blue-500/30 flex-grow mx-2"></div>
-                  <div className="text-blue-100 text-sm">0.68</div>
+                  <div className="text-blue-100 text-sm">4</div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-16 h-8 bg-blue-900/20 rounded flex items-center justify-center text-blue-300 border border-blue-900/40">
                     sky
                   </div>
                   <div className="h-1 bg-blue-500/30 flex-grow mx-2"></div>
-                  <div className="text-blue-100 text-sm">0.54</div>
+                  <div className="text-blue-100 text-sm">3</div>
                 </div>
               </div>
             </div>
-            <p className="text-blue-100/80 text-sm">
-              An algorithm detects English words in the string and scores them
-              by length and frequency.
+            <p className="text-blue-100/80 text-med">
+              Run an algorithm to get all substrings that make a word in this
+              long string
             </p>
           </div>
-
-          {/* Step 6: Visualization */}
-          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px]">
+          {/* Step 6: Signature */}
+          <div className="bg-black p-6 rounded-lg shadow-lg border border-blue-900/20 transition-all hover:transform hover:translate-y-[-4px] md:col-span-1">
             <h3 className="text-xl text-blue-300 mb-4 font-medium">
-              Step 6: Visualization
+              Step 6: Output
             </h3>
-            <div className="aspect-square bg-black rounded-lg overflow-hidden relative mb-4 border border-blue-900/40">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="grid grid-cols-3 gap-3 p-3 w-full">
-                  {[
-                    { word: "butterfly", size: 22, weight: 500 },
-                    { word: "mountain", size: 20, weight: 500 },
-                    { word: "forest", size: 18, weight: 500 },
-                    { word: "tree", size: 16, weight: 400 },
-                    { word: "sky", size: 14, weight: 400 },
-                    { word: "sun", size: 12, weight: 400 },
-                  ].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="text-center px-2 py-1 rounded-lg bg-blue-900/20 text-blue-300 border border-blue-900/40 flex items-center justify-center"
-                      style={{
-                        fontSize: item.size,
-                        fontWeight: item.weight,
-                      }}
-                    >
-                      {item.word}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <p className="text-blue-100/80 text-sm">
-              The words are displayed in a grid with font size reflecting their
-              importance score.
+            <p className="text-blue-100/80 text-med">
+              This creates a unique &quot;signature&quot; of words for each
+              image.
+            </p>
+            <p className="text-blue-100/80 text-med ">
+              The random seed is generated from the current date, so it is
+              different every day
+            </p>
+            <p className="text-blue-100/80 text-med">
+              Meaning, if your image means something different every day :D
             </p>
           </div>
         </div>
 
         <div className="text-center mt-12">
           <p className="text-blue-100/80 max-w-2xl mx-auto">
-            This technique creates a unique &quot;signature&quot; of words for
-            each image. While not scientifically rigorous, it&apos;s a creative
-            way to &quot;read&quot; the hidden textual patterns in visual
-            content.
+            Thanks to{" "}
+            <a
+              href="https://sarthakmangla.com"
+              target="_blank"
+              className="underline"
+            >
+              Sarthak Mangla
+            </a>{" "}
+            for the idea
           </p>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="mt-6 text-sm px-4 py-2 rounded-md bg-blue-900/30 text-blue-100 hover:bg-blue-900/50 transition-all"
-          >
-            Try It Yourself
-          </button>
         </div>
       </div>
     </div>

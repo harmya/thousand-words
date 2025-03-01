@@ -94,7 +94,7 @@ export default function Home() {
             <div className="bg-blue rounded-lg p-6 shadow-xl ">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div
-                  className="border border-blue-900/40 rounded-lg h-96 flex items-center justify-center cursor-pointer overflow-hidden bg-black"
+                  className="rounded-lg h-96 flex items-center justify-center cursor-pointer overflow-hidden bg-black"
                   onClick={() =>
                     document.getElementById("file-upload")?.click()
                   }

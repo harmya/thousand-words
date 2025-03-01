@@ -6,7 +6,7 @@ use image::{DynamicImage, GrayImage};
 use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -185,12 +185,6 @@ struct AppState {
 struct WordResponse {
     words: Vec<String>,
     letter_string: String,
-}
-
-// Request struct to deserialize the input data
-#[derive(Deserialize)]
-struct ImageProcessRequest {
-    seed: Option<u64>,
 }
 
 async fn process_image(
