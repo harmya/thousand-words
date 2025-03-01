@@ -2,7 +2,7 @@ name: Deploy Next.js to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main] # Set a branch to deploy from
 
 jobs:
   build-and-deploy:
@@ -30,6 +30,6 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: frontend/out # The folder the action should deploy
+          folder: ./frontend/out # The folder the action should deploy
           branch: gh-pages # The branch the action should deploy to
           clean: true # Automatically remove deleted files from the deployment
