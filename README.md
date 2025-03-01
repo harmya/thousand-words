@@ -7,7 +7,7 @@ A picture is worth a thousand words.
 1. Upload an image
 2. Convert the image to grayscale
 3. Convert the grayscale image to a string of letters
-4. Convert the string of letters to a string of words
+4. Use an algorithm to get valid words from the string
 5. Return the words
 
 Using sliding window, we extract all substrings that make a word in the string.
