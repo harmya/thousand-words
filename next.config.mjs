@@ -5,9 +5,7 @@ const nextConfig = {
     return [
       {
         source: "/process",
-        destination:
-          process.env.API_URL ||
-          "https://thousand-words-1u5f.onrender.com/process",
+        destination: "https://thousand-words-1u5f.onrender.com/process",
       },
     ];
   },
