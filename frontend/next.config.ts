@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath: process.env.NODE_ENV === "production" ? "/thousand-words" : "",
+  reactStrictMode: true,
   images: {
-    unoptimized: true,
+    unoptimized: true, // Disable default image optimization
   },
-  assetPrefix: process.env.NODE_ENV === "production" ? "/thousand-words/" : "",
+  assetPrefix: isProd ? "/thousand-words/" : "",
+  basePath: isProd ? "/thousand-words" : "",
+  output: "export",
 };
 
 export default nextConfig;
