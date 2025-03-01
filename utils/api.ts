@@ -6,10 +6,13 @@ export async function processImage(file: File): Promise<WordResponse> {
     const formData = new FormData();
     formData.append("image", file);
 
-    const response = await fetch("/process", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      "https://thousand-words-1u5f.onrender.com/process",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Server responded with ${response.status}`);
