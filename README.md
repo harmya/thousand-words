@@ -14,4 +14,4 @@ Using sliding window, we extract all substrings that make a word in the string.
 
 I also tried to get the strings that are a subsequence of the original string using dynamic programming, but it returned almost every single word in the dictionary. This might have something to do with the fact that for a large image, the string is too long and hence almost every single word in the dictionary is a subsequence of it.
 
-Made with Rust and Next.js. (Weird combination, I know.)
+Made with Rust and Next.js.
